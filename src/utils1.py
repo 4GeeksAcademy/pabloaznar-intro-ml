@@ -8,6 +8,7 @@ from sklearn.metrics import accuracy_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
+from statsmodels.tsa.stattools import adfuller
 
 
 def get_regression_metrics(y_predict_test, y_test, y_predict_train, y_train):
@@ -39,3 +40,11 @@ def get_classifier_metrics(y_predict_test, y_test, y_predict_train, y_train, ave
     return pd.DataFrame(data=[metrics_train, metrics_test],
                         columns=['Accuracy', 'F1 Score', 'Precision', 'Recall'],
                         index=['Train set', 'Test set'])
+
+def test_stationarity(timeseries):
+    print("Resultados de la prueba de Dickey-Fuller:")
+    dftest = adfuller(timeseries, autolag = "AIC")
+    dfoutput = pd.Series(dftest[0:4], index = ["Test Statistic", "p-value", "#Lags Used", "Number of Observations Used"])
+    for key,value in dftest[4].items():
+        dfoutput["Critical Value (%s)"%key] = value
+    return dfoutput
