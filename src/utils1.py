@@ -9,6 +9,10 @@ from sklearn.metrics import f1_score
 from sklearn.metrics import precision_score
 from sklearn.metrics import recall_score
 from statsmodels.tsa.stattools import adfuller
+import re
+from nltk import download
+from nltk.corpus import stopwords
+from nltk.stem import WordNetLemmatizer
 
 
 def get_regression_metrics(y_predict_test, y_test, y_predict_train, y_train):
@@ -48,3 +52,35 @@ def test_stationarity(timeseries):
     for key,value in dftest[4].items():
         dfoutput["Critical Value (%s)"%key] = value
     return dfoutput
+
+def preprocess_text(text):
+    text = text.lower()
+    # Reemplazar 'http://', 'https://', 'www', y '.com' por espacios
+    text = re.sub(r'https?://', ' ', text)
+    text = re.sub(r'www\.', ' ', text)
+    text = re.sub(r'\.com', ' ', text)
+    
+    # Eliminar cualquier caracter que no sea una letra (a-z) o un espacio en blanco ( )
+    text = re.sub(r'[^a-z ]', " ", text)
+
+    # Eliminar espacios en blanco
+    text = re.sub(r'\s+[a-zA-Z]\s+', " ", text)
+    text = re.sub(r'\^[a-zA-Z]\s+', " ", text)
+
+    # Reducir espacios en blanco múltiples a uno único
+    text = re.sub(r'\s+', " ", text)
+
+    return text.split()
+
+download("wordnet")
+lemmatizer = WordNetLemmatizer()
+
+download("stopwords")
+stop_words = stopwords.words("english")
+
+
+def lemmatize_text(words, lemmatizer = lemmatizer):
+    tokens = [lemmatizer.lemmatize(word) for word in words]
+    tokens = [word for word in tokens if word not in stop_words]
+    tokens = [word for word in tokens if len(word) > 3]
+    return tokens
