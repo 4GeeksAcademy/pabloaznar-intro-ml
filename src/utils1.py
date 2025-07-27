@@ -55,11 +55,9 @@ def test_stationarity(timeseries):
 
 def preprocess_text(text):
     text = text.lower()
-    # Reemplazar 'http://', 'https://', 'www', y '.com' por espacios
-    text = re.sub(r'https?://', ' ', text)
-    text = re.sub(r'www\.', ' ', text)
-    text = re.sub(r'\.com', ' ', text)
-    
+    # Reemplazar extensiones por espacios
+    text = re.sub(r'https?://|www\.|\.com|\.html|\.pdf|\.gov|\.net|\.org|\.edu|\.php|\.aspx', ' ', text)
+
     # Eliminar cualquier caracter que no sea una letra (a-z) o un espacio en blanco ( )
     text = re.sub(r'[^a-z ]', " ", text)
 
